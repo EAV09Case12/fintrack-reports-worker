@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+         http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ========================= -->
+    <!-- SPRING BOOT PARENT        -->
+    <!-- ========================= -->
+
+    <parent>
+
+        <groupId>org.springframework.boot</groupId>
+
+        <artifactId>spring-boot-starter-parent</artifactId>
+
+        <version>3.5.14</version>
+
+        <relativePath/>
+
+    </parent>
+
+    <!-- ========================= -->
+    <!-- PROJECT INFO              -->
+    <!-- ========================= -->
+
+    <groupId>com.example.fintrackreports</groupId>
+
+    <artifactId>fintrack-reports-worker</artifactId>
+
+    <version>0.0.1-SNAPSHOT</version>
+
+    <name>fintrack-reports-worker</name>
+
+    <description>
+        Worker encargado de consumir reportes financieros desde RabbitMQ,
+        generar PDFs y almacenarlos en Redis Cache
+    </description>
+
+    <!-- ========================= -->
+    <!-- PROPERTIES                -->
+    <!-- ========================= -->
+
+    <properties>
+
+        <java.version>21</java.version>
+
+        <pdfbox.version>3.0.2</pdfbox.version>
+
+    </properties>
+
+    <!-- ========================= -->
+    <!-- DEPENDENCIES              -->
+    <!-- ========================= -->
+
+    <dependencies>
+
+        <!-- ========================= -->
+        <!-- SPRING CORE               -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter</artifactId>
+
+        </dependency>
+        <!-- JUnit Jupiter explícito -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- RABBITMQ                  -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter-amqp</artifactId>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- REDIS                     -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- PDFBOX                    -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.apache.pdfbox</groupId>
+
+            <artifactId>pdfbox</artifactId>
+
+            <version>${pdfbox.version}</version>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- JACKSON                   -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>com.fasterxml.jackson.core</groupId>
+
+            <artifactId>jackson-databind</artifactId>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- LOMBOK                    -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.projectlombok</groupId>
+
+            <artifactId>lombok</artifactId>
+
+            <optional>true</optional>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- DEVTOOLS                  -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-devtools</artifactId>
+
+            <scope>runtime</scope>
+
+            <optional>true</optional>
+
+        </dependency>
+
+        <!-- ========================= -->
+        <!-- TESTING                   -->
+        <!-- ========================= -->
+
+        <dependency>
+
+            <groupId>org.springframework.boot</groupId>
+
+            <artifactId>spring-boot-starter-test</artifactId>
+
+            <scope>test</scope>
+
+        </dependency>
+
+        <dependency>
+
+            <groupId>org.springframework.amqp</groupId>
+
+            <artifactId>spring-rabbit-test</artifactId>
+
+            <scope>test</scope>
+
+        </dependency>
+
+    </dependencies>
+
+    <!-- ========================= -->
+    <!-- BUILD                      -->
+    <!-- ========================= -->
+
+    <build>
+
+        <plugins>
+
+            <!-- ========================= -->
+            <!-- SPRING BOOT               -->
+            <!-- ========================= -->
+
+            <plugin>
+
+                <groupId>org.springframework.boot</groupId>
+
+                <artifactId>spring-boot-maven-plugin</artifactId>
+
+                <configuration>
+
+                    <excludes>
+
+                        <exclude>
+
+                            <groupId>org.projectlombok</groupId>
+
+                            <artifactId>lombok</artifactId>
+
+                        </exclude>
+
+                    </excludes>
+
+                </configuration>
+
+            </plugin>
+
+            <!-- ========================= -->
+            <!-- COMPILER                  -->
+            <!-- ========================= -->
+
+            <plugin>
+
+                <groupId>org.apache.maven.plugins</groupId>
+
+                <artifactId>maven-compiler-plugin</artifactId>
+
+                <configuration>
+
+                    <source>21</source>
+
+                    <target>21</target>
+
+                    <annotationProcessorPaths>
+
+                        <path>
+
+                            <groupId>org.projectlombok</groupId>
+
+                            <artifactId>lombok</artifactId>
+
+                        </path>
+
+                    </annotationProcessorPaths>
+
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+    <!-- ========================= -->
+    <!-- MAVEN CENTRAL              -->
+    <!-- ========================= -->
+
+    <repositories>
+
+        <repository>
+
+            <id>central</id>
+
+            <url>https://repo.maven.apache.org/maven2</url>
+
+        </repository>
+
+    </repositories>
+
+</project>
