@@ -3,11 +3,11 @@ server:
 
 spring:
   rabbitmq:
-    host: ${RABBIT_HOST}
-    port: ${RABBIT_PORT}
-    username: ${RABBIT_USERNAME}
-    password: ${RABBIT_PASSWORD}
-    virtual-host: ${RABBIT_VHOST:}
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
     listener:
       simple:
         retry:
@@ -18,10 +18,16 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      password: ${REDIS_PASSWORD:}
+      host: localhost
+      port: 6379
+      password:
 
 report:
   cache:
     ttl-hours: 2
+
+logging:
+  level:
+    org.springframework.amqp: DEBUG
+    org.springframework.rabbit: DEBUG
+    com.example.fintrackreports: DEBUG
