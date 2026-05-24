@@ -18,7 +18,7 @@
 
         <artifactId>spring-boot-starter-parent</artifactId>
 
-        <version>3.5.14</version>
+        <version>3.3.5</version>
 
         <relativePath/>
 
@@ -51,6 +51,8 @@
 
         <pdfbox.version>3.0.2</pdfbox.version>
 
+        <lombok.version>1.18.34</lombok.version>
+
     </properties>
 
     <!-- ========================= -->
@@ -69,13 +71,6 @@
 
             <artifactId>spring-boot-starter</artifactId>
 
-        </dependency>
-        <!-- JUnit Jupiter explícito -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- ========================= -->
@@ -128,6 +123,14 @@
 
         </dependency>
 
+        <dependency>
+
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+
+            <artifactId>jackson-datatype-jsr310</artifactId>
+
+        </dependency>
+
         <!-- ========================= -->
         <!-- LOMBOK                    -->
         <!-- ========================= -->
@@ -137,6 +140,8 @@
             <groupId>org.projectlombok</groupId>
 
             <artifactId>lombok</artifactId>
+
+            <version>${lombok.version}</version>
 
             <optional>true</optional>
 
@@ -185,7 +190,7 @@
     </dependencies>
 
     <!-- ========================= -->
-    <!-- BUILD                      -->
+    <!-- BUILD                     -->
     <!-- ========================= -->
 
     <build>
@@ -244,6 +249,8 @@
 
                             <artifactId>lombok</artifactId>
 
+                            <version>${lombok.version}</version>
+
                         </path>
 
                     </annotationProcessorPaths>
@@ -257,7 +264,7 @@
     </build>
 
     <!-- ========================= -->
-    <!-- MAVEN CENTRAL              -->
+    <!-- MAVEN CENTRAL             -->
     <!-- ========================= -->
 
     <repositories>
