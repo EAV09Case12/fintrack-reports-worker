@@ -6,8 +6,8 @@ import com.example.fintrackreports.domain.model.ReporteFinanciero;
 import com.example.fintrackreports.domain.model.ReporteMensualEvent;
 import com.example.fintrackreports.domain.model.SugerenciaFinanciera;
 
-import com.example.fintrackreports.infrastructure.messaging.mapper.RabbitEventMapper;
-import com.example.fintrackreports.infrastructure.messaging.model.RabbitReporteMensualMessage;
+import com.example.fintrackreports.infrastructure.messaging.consumer
+        .ReporteMensualConsumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -19,328 +19,70 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PdfGeneratorImplTest {
 
     @Test
-    void deberiaGenerarPdfCorrectamente()
+    void deberiaSimularLecturaCompletaMensajeRabbitMQ()
             throws Exception {
 
-        PdfGeneratorImpl generator =
-                new PdfGeneratorImpl();
-
-        BalanceFinanciero balance =
-                new BalanceFinanciero();
-
-        balance.setCategoria(
-                Categoria.ALIMENTACION
-        );
-
-        balance.setPresupuesto(
-                new BigDecimal("500000")
-        );
-
-        balance.setGastoReal(
-                new BigDecimal("350000")
-        );
-
-        balance.setDiferencia(
-                new BigDecimal("150000")
-        );
-
-        balance.setPorcentajeUso(
-                70.0
-        );
-
-        SugerenciaFinanciera sugerencia =
-                new SugerenciaFinanciera();
-
-        sugerencia.setTitulo(
-                "Reducir gastos"
-        );
-
-        sugerencia.setMensaje(
-                "Disminuir gastos innecesarios."
-        );
-
-        ReporteFinanciero reporte =
-                new ReporteFinanciero();
-
-        reporte.setRequestId(
-                "TEST-001"
-        );
-
-        reporte.setEmailUsuario(
-                "usuario@test.com"
-        );
-
-        reporte.setMes(
-                5
-        );
-
-        reporte.setAnio(
-                2026
-        );
-
-        reporte.setBalances(
-                List.of(balance)
-        );
-
-        reporte.setSugerencias(
-                List.of(sugerencia)
-        );
-
-        byte[] pdf =
-                generator.generarReporte(
-                        reporte
-                );
-
-        assertNotNull(pdf);
-
-        assertTrue(pdf.length > 0);
-
-        Files.write(
-                Path.of("reporte-test.pdf"),
-                pdf
-        );
-
-        System.out.println(
-                "PDF generado correctamente."
-        );
-    }
-
-    @Test
-    void deberiaSimularProcesoCompletoDelWorker()
-            throws Exception {
-
-        PdfGeneratorImpl generator =
-                new PdfGeneratorImpl();
-
-        List<BalanceFinanciero> balances =
-                List.of(
-
-                        crearBalance(
-                                Categoria.SERVICIOS,
-                                "800000",
-                                "520000",
-                                65.0
-                        ),
-
-                        crearBalance(
-                                Categoria.ENTRETENIMIENTO,
-                                "400000",
-                                "280000",
-                                70.0
-                        ),
-
-                        crearBalance(
-                                Categoria.TRANSPORTE,
-                                "300000",
-                                "210000",
-                                70.0
-                        ),
-
-                        crearBalance(
-                                Categoria.ALIMENTACION,
-                                "700000",
-                                "450000",
-                                64.0
-                        ),
-
-                        crearBalance(
-                                Categoria.SALUD,
-                                "350000",
-                                "150000",
-                                42.0
-                        ),
-
-                        crearBalance(
-                                Categoria.DEUDAS,
-                                "1000000",
-                                "760000",
-                                76.0
-                        )
-                );
-
-        List<SugerenciaFinanciera> sugerencias =
-                List.of(
-
-                        crearSugerencia(
-                                "Servicios",
-                                "Netflix: considerar plan economico. Internet hogar: revisar promociones disponibles."
-                        ),
-
-                        crearSugerencia(
-                                "Entretenimiento",
-                                "Steam Games: reducir compras impulsivas. Cine: aprovechar descuentos."
-                        ),
-
-                        crearSugerencia(
-                                "Transporte",
-                                "Gasolina: optimizar recorridos. Uber: priorizar transporte publico."
-                        ),
-
-                        crearSugerencia(
-                                "Alimentacion",
-                                "Restaurante: reducir comidas externas. Mercado: organizar compras."
-                        ),
-
-                        crearSugerencia(
-                                "Salud",
-                                "Medicamentos: validar opciones genericas. Consulta medica: revisar cobertura."
-                        ),
-
-                        crearSugerencia(
-                                "Deudas",
-                                "Tarjeta credito: pagar mas que el minimo. Prestamo: evitar nuevas obligaciones."
-                        )
-                );
-
-        ReporteFinanciero reporte =
-                new ReporteFinanciero();
-
-        reporte.setRequestId(
-                "WORKER-TEST-001"
-        );
-
-        reporte.setEmailUsuario(
-                "worker@test.com"
-        );
-
-        reporte.setMes(
-                5
-        );
-
-        reporte.setAnio(
-                2026
-        );
-
-        reporte.setBalances(
-                balances
-        );
-
-        reporte.setSugerencias(
-                sugerencias
-        );
-
-        System.out.println(
-                "Mensaje consumido desde la cola correctamente."
-        );
-
-        byte[] pdf =
-                generator.generarReporte(
-                        reporte
-                );
-
-        assertNotNull(pdf);
-
-        assertTrue(pdf.length > 0);
-
-        Files.write(
-                Path.of("worker-reporte-test.pdf"),
-                pdf
-        );
-
-        System.out.println(
-                "PDF generado y almacenado correctamente."
-        );
-
-        System.out.println(
-                "Ruta archivo: worker-reporte-test.pdf"
-        );
-
-        System.out.println(
-                "Tamaño PDF bytes: " + pdf.length
-        );
-
-        System.out.println(
-                "Redis -> Guardando PDF en bytes..."
-        );
-
-        byte[] redisBytes =
-                pdf;
-
-        assertNotNull(
-                redisBytes
-        );
-
-        assertTrue(
-                redisBytes.length > 0
-        );
-
-        System.out.println(
-                "Redis -> PDF almacenado correctamente."
-        );
-
-        System.out.println(
-                "Redis -> Bytes almacenados: "
-                        + redisBytes.length
-        );
-    }
-
-    @Test
-    void deberiaProcesarMensajeRabbitMQCompleto()
-            throws Exception {
-
-        String rabbitMessage = """
+        String json = """
                 {
-                  "requestId": "9d4f6c11-3d3e-4fd8-bc29-84c12f88f001",
-                  "emailUsuario": "steven@gmail.com",
+                  "requestId": "REQ-001",
+                  "emailUsuario": "usuario@test.com",
                   "mes": 5,
                   "anio": 2026,
                   "egresos": [
                     {
                       "id": 1,
-                      "monto": 85000.00,
-                      "fecha": "2026-05-03",
+                      "monto": 150000,
+                      "fecha": "2026-05-10",
                       "categoria": "ALIMENTACION",
-                      "descripcion": "Compra supermercado Exito",
-                      "emailUsuario": "steven@gmail.com"
+                      "descripcion": "Compra supermercado",
+                      "emailUsuario": "usuario@test.com"
                     },
                     {
                       "id": 2,
-                      "monto": 45000.00,
-                      "fecha": "2026-05-05",
-                      "categoria": "ENTRETENIMIENTO",
-                      "descripcion": "Entradas cine",
-                      "emailUsuario": "steven@gmail.com"
+                      "monto": 80000,
+                      "fecha": "2026-05-12",
+                      "categoria": "TRANSPORTE",
+                      "descripcion": "Gasolina carro",
+                      "emailUsuario": "usuario@test.com"
                     },
                     {
                       "id": 3,
-                      "monto": 18000.00,
-                      "fecha": "2026-05-06",
-                      "categoria": "TRANSPORTE",
-                      "descripcion": "Pasajes metro",
-                      "emailUsuario": "steven@gmail.com"
+                      "monto": 120000,
+                      "fecha": "2026-05-15",
+                      "categoria": "ENTRETENIMIENTO",
+                      "descripcion": "Salida cine",
+                      "emailUsuario": "usuario@test.com"
                     }
                   ],
                   "presupuestos": [
                     {
                       "fecha": "2026-05-01",
                       "categoria": "ALIMENTACION",
-                      "monto": 300000.00
-                    },
-                    {
-                      "fecha": "2026-05-01",
-                      "categoria": "ENTRETENIMIENTO",
-                      "monto": 150000.00
+                      "monto": 100000
                     },
                     {
                       "fecha": "2026-05-01",
                       "categoria": "TRANSPORTE",
-                      "monto": 120000.00
+                      "monto": 50000
+                    },
+                    {
+                      "fecha": "2026-05-01",
+                      "categoria": "ENTRETENIMIENTO",
+                      "monto": 70000
                     }
                   ]
                 }
                 """;
-
-        System.out.println(
-                "Mensaje RabbitMQ recibido correctamente."
-        );
 
         ObjectMapper objectMapper =
                 new ObjectMapper();
@@ -349,32 +91,76 @@ class PdfGeneratorImplTest {
                 new JavaTimeModule()
         );
 
-        RabbitReporteMensualMessage rabbitMsg =
-                objectMapper.readValue(
-                        rabbitMessage,
-                        RabbitReporteMensualMessage.class
-                );
-
-        assertNotNull(
-                rabbitMsg
-        );
-
-        System.out.println(
-                "Mensaje mapeado correctamente. RequestId: "
-                        + rabbitMsg.getRequestId()
-        );
-
-        RabbitEventMapper mapper =
-                new RabbitEventMapper();
-
         ReporteMensualEvent event =
-                mapper.toDomain(
-                        rabbitMsg
+                objectMapper.readValue(
+                        json,
+                        ReporteMensualEvent.class
                 );
 
-        assertNotNull(
-                event
+        ReporteMensualConsumer consumer =
+                new ReporteMensualConsumer(
+                        reporteEvent -> {
+
+                            ReporteFinanciero reporte =
+                                    construirReporte(
+                                            reporteEvent
+                                    );
+
+                            PdfGeneratorImpl generator =
+                                    new PdfGeneratorImpl();
+
+                            byte[] pdf =
+                                    generator.generarReporte(
+                                            reporte
+                                    );
+
+                            Path path =
+                                    Path.of(
+                                            "worker-reporte-test.pdf"
+                                    );
+
+                            try {
+
+                                Files.write(
+                                        path,
+                                        pdf
+                                );
+
+                                } catch (Exception e) {
+
+                                throw new RuntimeException(e);
+                                }
+
+                            System.out.println(
+                                    "PDF generado correctamente."
+                            );
+
+                            System.out.println(
+                                    "Ruta archivo: "
+                                            + path.toAbsolutePath()
+                            );
+
+                            System.out.println(
+                                    "Tamaño PDF bytes: "
+                                            + pdf.length
+                            );
+
+                            assertTrue(
+                                    pdf.length > 0
+                            );
+                        }
+                );
+
+        assertDoesNotThrow(() ->
+                consumer.consumirReporteMensual(
+                        event
+                )
         );
+    }
+
+    private ReporteFinanciero construirReporte(
+            ReporteMensualEvent event
+    ) {
 
         ReporteFinanciero reporte =
                 new ReporteFinanciero();
@@ -395,167 +181,123 @@ class PdfGeneratorImplTest {
                 event.getAnio()
         );
 
-        reporte.setBalances(
-        List.of(
-
-                crearBalance(
-                        Categoria.ALIMENTACION,
-                        "300000",
-                        "85000",
-                        28.0
-                ),
-
-                crearBalance(
-                        Categoria.ENTRETENIMIENTO,
-                        "150000",
-                        "45000",
-                        30.0
-                ),
-
-                crearBalance(
-                        Categoria.TRANSPORTE,
-                        "120000",
-                        "18000",
-                        15.0
-                )
-        )
-);
-
-        reporte.setSugerencias(
-                List.of(
-
-                        crearSugerencia(
-                                "Alimentacion",
-                                "Buen manejo del presupuesto."
-                        ),
-
-                        crearSugerencia(
-                                "Entretenimiento",
-                                "Mantener control de gastos recreativos."
-                        ),
-
-                        crearSugerencia(
-                                "Transporte",
-                                "Uso eficiente del presupuesto."
-                        )
-                )
+        reporte.setEgresos(
+                event.getEgresos()
         );
 
-        PdfGeneratorImpl generator =
-                new PdfGeneratorImpl();
-
-        byte[] pdf =
-                generator.generarReporte(
-                        reporte
-                );
-
-        assertNotNull(
-                pdf
+        reporte.setPresupuestos(
+                event.getPresupuestos()
         );
 
-        assertTrue(
-                pdf.length > 0
-        );
+        List<BalanceFinanciero> balances =
+                new ArrayList<>();
 
-        Files.write(
-                Path.of("rabbitmq-worker-test.pdf"),
-                pdf
-        );
-
-        System.out.println(
-                "PDF generado correctamente."
-        );
-
-        System.out.println(
-                "Ruta PDF: rabbitmq-worker-test.pdf"
-        );
-
-        System.out.println(
-                "Tamaño PDF bytes: " + pdf.length
-        );
-
-        byte[] redisBytes =
-                pdf;
-
-        assertNotNull(
-                redisBytes
-        );
-
-        assertTrue(
-                redisBytes.length > 0
-        );
-
-        System.out.println(
-                "Redis -> PDF almacenado correctamente."
-        );
-
-        System.out.println(
-                "Redis -> Bytes almacenados: "
-                        + redisBytes.length
-        );
-    }
-
-    private BalanceFinanciero crearBalance(
-            Categoria categoria,
-            String presupuesto,
-            String gastoReal,
-            Double porcentajeUso
-    ) {
-
-        BalanceFinanciero balance =
+        BalanceFinanciero balance1 =
                 new BalanceFinanciero();
 
-        BigDecimal presupuestoValue =
-                new BigDecimal(
-                        presupuesto
-                );
-
-        BigDecimal gastoRealValue =
-                new BigDecimal(
-                        gastoReal
-                );
-
-        balance.setCategoria(
-                categoria
+        balance1.setCategoria(
+                Categoria.ALIMENTACION
         );
 
-        balance.setPresupuesto(
-                presupuestoValue
+        balance1.setPresupuesto(
+                BigDecimal.valueOf(100000)
         );
 
-        balance.setGastoReal(
-                gastoRealValue
+        balance1.setGastoReal(
+                BigDecimal.valueOf(150000)
         );
 
-        balance.setDiferencia(
-                presupuestoValue.subtract(
-                        gastoRealValue
+        balance1.setDiferencia(
+                BigDecimal.valueOf(-50000)
+        );
+
+        balance1.setPorcentajeUso(
+                150.0
+        );
+
+        balances.add(balance1);
+
+        BalanceFinanciero balance2 =
+                new BalanceFinanciero();
+
+        balance2.setCategoria(
+                Categoria.TRANSPORTE
+        );
+
+        balance2.setPresupuesto(
+                BigDecimal.valueOf(50000)
+        );
+
+        balance2.setGastoReal(
+                BigDecimal.valueOf(80000)
+        );
+
+        balance2.setDiferencia(
+                BigDecimal.valueOf(-30000)
+        );
+
+        balance2.setPorcentajeUso(
+                160.0
+        );
+
+        balances.add(balance2);
+
+        BalanceFinanciero balance3 =
+        new BalanceFinanciero();
+
+        balance3.setCategoria(
+                Categoria.ENTRETENIMIENTO
+        );
+
+        balance3.setPresupuesto(
+                BigDecimal.valueOf(70000)
+        );
+
+        balance3.setGastoReal(
+                BigDecimal.valueOf(120000)
+        );
+
+        balance3.setDiferencia(
+                BigDecimal.valueOf(-50000)
+        );
+
+        balance3.setPorcentajeUso(
+                171.42
+        );
+
+        balances.add(balance3);
+
+        reporte.setBalances(
+                balances
+        );
+
+        List<SugerenciaFinanciera> sugerencias =
+                new ArrayList<>();
+
+        sugerencias.add(
+                new SugerenciaFinanciera(
+                        Categoria.ALIMENTACION,
+                        "Controla gastos",
+                        "Reduce compras innecesarias.",
+                        "PREVENCION",
+                        1
                 )
         );
 
-        balance.setPorcentajeUso(
-                porcentajeUso
+        sugerencias.add(
+                new SugerenciaFinanciera(
+                        Categoria.TRANSPORTE,
+                        "Optimiza transporte",
+                        "Usa medios alternativos.",
+                        "PREVENCION",
+                        2
+                )
         );
 
-        return balance;
-    }
-
-    private SugerenciaFinanciera crearSugerencia(
-            String titulo,
-            String mensaje
-    ) {
-
-        SugerenciaFinanciera sugerencia =
-                new SugerenciaFinanciera();
-
-        sugerencia.setTitulo(
-                titulo
+        reporte.setSugerencias(
+                sugerencias
         );
 
-        sugerencia.setMensaje(
-                mensaje
-        );
-
-        return sugerencia;
+        return reporte;
     }
 }
