@@ -85,8 +85,18 @@ public class ReporteMensualUseCase
                 )
         ) {
 
+            System.out.println(
+                    "Reporte ya existente en cache. requestId="
+                            + event.getRequestId()
+            );
+
             return;
         }
+
+        System.out.println(
+                "Procesando reporte financiero. requestId="
+                        + event.getRequestId()
+        );
 
         List<Egreso> egresos =
                 event.getEgresos();
@@ -147,9 +157,19 @@ public class ReporteMensualUseCase
                         reporte
                 );
 
+        System.out.println(
+                "PDF generado correctamente. Bytes="
+                        + pdf.length
+        );
+
         reportCachePort.guardarReporte(
                 event.getRequestId(),
                 pdf
+        );
+
+        System.out.println(
+                "Reporte almacenado correctamente en Redis. requestId="
+                        + event.getRequestId()
         );
     }
 

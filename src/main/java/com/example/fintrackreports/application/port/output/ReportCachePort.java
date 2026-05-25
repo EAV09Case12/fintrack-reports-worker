@@ -11,4 +11,11 @@ public interface ReportCachePort {
             String requestId
     );
 
+    byte[] obtenerReporte(
+            String requestId
+    );
+
+    void eliminarReporte(
+            String requestId
+    );
 }
