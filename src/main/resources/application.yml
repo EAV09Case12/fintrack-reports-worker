@@ -2,12 +2,14 @@ server:
   port: 8086
 
 spring:
+
   rabbitmq:
-    host: ${RABBIT_HOST}
-    port: ${RABBIT_PORT}
-    username: ${RABBIT_USERNAME}
-    password: ${RABBIT_PASSWORD}
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:guest}
+    password: ${RABBIT_PASSWORD:guest}
     virtual-host: ${RABBIT_VHOST:}
+
     listener:
       simple:
         retry:
@@ -18,10 +20,16 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
 
 report:
   cache:
     ttl-hours: 2
+
+logging:
+  level:
+    org.springframework.amqp: DEBUG
+    org.springframework.rabbit: DEBUG
+    org.springframework.data.redis: DEBUG
