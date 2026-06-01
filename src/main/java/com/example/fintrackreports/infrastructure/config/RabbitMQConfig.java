@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.lang.NonNull;
+import java.util.Objects;
 
 @Configuration
 public class RabbitMQConfig {
@@ -43,7 +44,7 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Queue reportQueue() {
+        public @NonNull Queue reportQueue() {
 
         return QueueBuilder
                 .durable(REPORT_QUEUE)
@@ -51,12 +52,12 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding reportBinding() {
+        public @NonNull Binding reportBinding() {
 
-        return BindingBuilder
-                .bind(reportQueue())
-                .to(reportExchange())
-                .with(REPORT_ROUTING_KEY);
+                return BindingBuilder
+                                .bind(reportQueue())
+                                .to(reportExchange())
+                                .with(REPORT_ROUTING_KEY);
     }
 
     @Bean
@@ -78,6 +79,8 @@ public class RabbitMQConfig {
     public RabbitTemplate rabbitTemplate(
             @NonNull ConnectionFactory connectionFactory
     ) {
+
+        Objects.requireNonNull(connectionFactory, "connectionFactory must not be null");
 
         RabbitTemplate template =
                 new RabbitTemplate(
