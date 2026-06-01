@@ -33,3 +33,12 @@ logging:
     org.springframework.amqp: DEBUG
     org.springframework.rabbit: DEBUG
     org.springframework.data.redis: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health, prometheus"
+  endpoint:
+    prometheus:
+      enabled: true

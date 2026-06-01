@@ -4,10 +4,12 @@ import com.example.fintrackreports.application.port.output
         .ReportCachePort;
 
 import org.springframework.data.redis.core.RedisTemplate;
-
+import org.springframework.lang.Nullable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.Objects;
 
 @Component
 public class RedisReportCache
@@ -23,12 +25,12 @@ public class RedisReportCache
             redisTemplate;
 
     public RedisReportCache(
-            RedisTemplate<String, byte[]>
+            @NonNull RedisTemplate<String, byte[]>
                     redisTemplate
     ) {
 
         this.redisTemplate =
-                redisTemplate;
+                Objects.requireNonNull(redisTemplate, "redisTemplate must not be null");
     }
 
     @Override
@@ -36,6 +38,8 @@ public class RedisReportCache
             String requestId,
             byte[] pdf
     ) {
+
+        Objects.requireNonNull(pdf, "pdf must not be null");
 
         String key =
                 generarKey(requestId);
@@ -59,6 +63,7 @@ public class RedisReportCache
         );
     }
 
+    @Nullable
     public byte[] obtenerReporte(
             String requestId
     ) {
@@ -82,7 +87,8 @@ public class RedisReportCache
     private String generarKey(
             String requestId
     ) {
+                Objects.requireNonNull(requestId, "requestId must not be null");
 
-        return PREFIX + requestId;
+                return PREFIX + requestId;
     }
 }

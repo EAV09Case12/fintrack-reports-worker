@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import java.util.Objects;
 
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
@@ -28,8 +29,10 @@ public class RedisConfig {
     @Value("${spring.data.redis.password:}")
     private String password;
 
-    @Bean
-    public RedisConnectionFactory redisConnectionFactory() {
+        @Bean
+        public RedisConnectionFactory redisConnectionFactory() {
+
+        Objects.requireNonNull(host, "spring.data.redis.host must not be null");
 
         RedisStandaloneConfiguration config =
                 new RedisStandaloneConfiguration();
@@ -57,6 +60,8 @@ public class RedisConfig {
     public RedisTemplate<String, byte[]> redisTemplate(
             RedisConnectionFactory connectionFactory
     ) {
+
+        Objects.requireNonNull(connectionFactory, "connectionFactory must not be null");
 
         RedisTemplate<String, byte[]> template =
                 new RedisTemplate<>();
